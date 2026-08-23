@@ -22,7 +22,7 @@ erDiagram
     }
     eodTick {
       string id PK
-      string companyId FK
+      string stockId FK
       number date
       number open
       number high
@@ -33,7 +33,7 @@ erDiagram
     stock }o--o| watchlist : "may be included in"
     watchlist {
       string id PK
-      string companyId FK
+      string stockId FK
     }
 ```
 
