@@ -6,7 +6,7 @@ AssetMate is a single page application to display company information including 
 
 ### Data Model
 
-::: mermaid
+```mermaid
 erDiagram
     stock ||--o{ eodTick : contains
     stock {
@@ -35,7 +35,7 @@ erDiagram
       string id PK
       string companyId FK
     }
-:::
+```
 
 ### Tools Used
 
