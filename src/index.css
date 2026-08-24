@@ -98,14 +98,14 @@ main h1 {
   padding: 8px;
 }
 
-.stocks-list {
+.stocks-list, #watchlist {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 8px;
 }
 
-.stocks-list-entry {
+.stocks-list-entry, .watchlist-entry {
   display: flex;
   justify-content: space-between;
   border: 1px solid #DDDDDD;
@@ -117,13 +117,13 @@ main h1 {
   height: 24px;
 }
 
-.stocks-list-entry .price-details {
+.price-details {
   display: flex;
   justify-content: space-between;
   min-width: 164px;
 }
 
-.stocks-list-entry .current-price {
+.current-price {
   width: 100px;
   text-align: end;
 }
@@ -141,7 +141,7 @@ p.negative {
   align-self: flex-end;
 }
 
-#stock-details {
+#stock-details{
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -170,4 +170,15 @@ p.negative {
 
 #stock-details .stock-info a {
   color: #0000FF;
+}
+
+.watchist-price-and-action {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.watchist-price-and-action button {
+  width: 28px;
+  height: 28px;
 }

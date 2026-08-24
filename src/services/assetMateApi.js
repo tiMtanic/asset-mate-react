@@ -20,6 +20,12 @@ export async function getEodTicks(stockId, daysInPast) {
     return response.data;
 }
 
+export async function getWatchlist(limit) {
+    const response = await axios.get(`${BASE_URL}/watchlist?_embed=stock${limit ? `&_page=1&_per_page=${limit}` : ""}`);
+    console.log("getWatchlist", response.data);
+    return response.data;
+}
+
 export async function getWatchlistEntry(stockId) {
     const response = await axios.get(`${BASE_URL}/watchlist?stockId=${stockId}`);
     console.log("getWatchlistEntry", response.data);

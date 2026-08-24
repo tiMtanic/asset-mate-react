@@ -1,8 +1,12 @@
 import React from 'react'
+import Watchlist from '../components/Watchlist'
 
 function WatchlistPage() {
   return (
-    <div>WatchlistPage</div>
+    <>
+      <h1>Watchlist</h1>
+      <Watchlist />
+    </>
   )
 }
 

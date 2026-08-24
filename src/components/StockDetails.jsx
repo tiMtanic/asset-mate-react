@@ -11,11 +11,8 @@ function StockDetails() {
 
   useEffect(() => {
     loadStockData();
-  }, []);
-
-  useEffect(() => {
     loadWatchlistData();
-  }, [stock]);
+  }, [stockId]);
 
   const loadStockData = async () => {
     try {
@@ -30,8 +27,8 @@ function StockDetails() {
 
   const loadWatchlistData = async () => {
     try {
-      const result = await getWatchlistEntry(stock.id);
-      setWatchlistId(result[0]?.id);
+      const result = await getWatchlistEntry(stockId);
+      setWatchlistId(result[0]?.id ?? null);
     } catch (error) {
       // TODO: proper error handling
       console.log(error);
