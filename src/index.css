@@ -62,6 +62,17 @@ nav {
   border-bottom: 2px solid #000000;
 }
 
+main {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+main > h1 {
+  font-size: 24px;
+}
+
 #hamburger-menu-button {
   margin-top: -8px;
   font-weight: bolder;
@@ -85,4 +96,47 @@ nav {
 
 #slideout-menu li p {
   padding: 8px;
+}
+
+.stocks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.stocks-list-entry {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #DDDDDD;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.stocks-list-entry img {
+  height: 24px;
+}
+
+.stocks-list-entry .price-details {
+  display: flex;
+  justify-content: space-between;
+  min-width: 164px;
+}
+
+.stocks-list-entry .current-price {
+  width: 100px;
+  text-align: end;
+}
+
+p.positive {
+  color: #00BB00;
+}
+
+p.negative {
+  color: #BB0000;
+}
+
+.add-stock-button {
+  padding: 0 16px;
+  align-self: flex-end;
 }
