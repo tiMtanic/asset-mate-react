@@ -1,3 +1,5 @@
+/* CSS Baseling */
+
 *,
 *::before,
 *::after {
@@ -49,4 +51,38 @@ a {
 
 #root {
   min-height: 100dvh;
+}
+
+/* Styles */
+nav {
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #000000;
+}
+
+#hamburger-menu-button {
+  margin-top: -8px;
+  font-weight: bolder;
+  font-size: 32px;
+  line-height: .35;
+  cursor: pointer;
+  user-select: none;
+}
+
+#slideout-menu {
+  position: fixed;
+  background-color: #FFFFFF;
+  height: 100%;
+  width: 200px;
+  border-right: 2px solid #000000;
+}
+
+#slideout-menu li {
+  border-bottom: 2px solid #000000;
+}
+
+#slideout-menu li p {
+  padding: 8px;
 }
