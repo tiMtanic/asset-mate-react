@@ -57,8 +57,8 @@ function StocksList() {
             const priceDifference = calculatePriceDifference(i);
 
             return (
-              <Link to={`/stocks/${stock.id}`}>
-                <div className="stocks-list-entry" key={stock.id}>
+              <Link key={stock.id} to={`/stocks/${stock.id}`}>
+                <div className="stocks-list-entry">
                   {/* <img src={stock.logoUrl} /> */}
                   <p>{stock.companyName}</p>
                   <div className="price-details">

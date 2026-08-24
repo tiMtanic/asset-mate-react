@@ -8,8 +8,34 @@ export async function getStocks() {
     return response.data;
 }
 
+export async function getStock(stockId) {
+    const response = await axios.get(`${BASE_URL}/stocks/${stockId}`);
+    console.log("getStock", response.data);
+    return response.data;
+}
+
 export async function getEodTicks(stockId, daysInPast) {
     const response = await axios.get(`${BASE_URL}/eodTicks?stockId=${stockId}${daysInPast ? "&_sort=-date&_page=1&_per_page=" + daysInPast : ""}`);
     console.log(response.data);
+    return response.data;
+}
+
+export async function getWatchlistEntry(stockId) {
+    const response = await axios.get(`${BASE_URL}/watchlist?stockId=${stockId}`);
+    console.log("getWatchlistEntry", response.data);
+    return response.data;
+}
+
+export async function addWatchlistEntry(stockId) {
+    const response = await axios.post(`${BASE_URL}/watchlist`, {
+        stockId: stockId
+    });
+    console.log("addWatchlistEntry", response.data);
+    return response.data;
+}
+
+export async function deleteWatchlistEntry(watchlistId) {
+    const response = await axios.delete(`${BASE_URL}/watchlist/${watchlistId}`);
+    console.log("deleteWatchlistEntry", response.data);
     return response.data;
 }

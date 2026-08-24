@@ -69,7 +69,7 @@ main {
   gap: 8px;
 }
 
-main > h1 {
+main h1 {
   font-size: 24px;
 }
 
@@ -139,4 +139,35 @@ p.negative {
 .add-stock-button {
   padding: 0 16px;
   align-self: flex-end;
+}
+
+#stock-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#stock-details .stock-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+#stock-details .stock-actions button {
+  width: 50%;
+}
+
+#stock-details .stock-about, #stock-details .stock-info {
+  border: 1px solid #DDDDDD;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+#stock-details .stock-info .info-label {
+  display: inline-block;
+  min-width: 128px;
+}
+
+#stock-details .stock-info a {
+  color: #0000FF;
 }
