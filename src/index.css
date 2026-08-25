@@ -147,17 +147,17 @@ p.negative {
   gap: 16px;
 }
 
-#stock-details .stock-actions {
+#stock-details .stock-actions, #form-actions {
   display: flex;
   gap: 16px;
   justify-content: space-between;
 }
 
-#stock-details .stock-actions button {
+#stock-details .stock-actions button, #form-actions button {
   width: 50%;
 }
 
-#stock-details .stock-about, #stock-details .stock-info {
+#stock-details .stock-about, #stock-details .stock-info, #stock-add-edit-container {
   border: 1px solid #DDDDDD;
   border-radius: 8px;
   padding: 8px;
@@ -181,4 +181,24 @@ p.negative {
 .watchist-price-and-action button {
   width: 28px;
   height: 28px;
+}
+
+#stock-add-edit-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input-container label {
+  font-size: 14px;
+}
+
+#form-actions {
+  margin-top: 8px;
+  justify-content: flex-end;
 }

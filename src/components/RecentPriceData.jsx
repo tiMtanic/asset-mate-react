@@ -37,7 +37,7 @@ function RecentPriceData({stockId}) {
     <>
       {isLoading ? <p>Loading...</p> :
       <div className="price-details">
-        <p className="current-price">${recentPriceData[0]?.close}</p>
+        {recentPriceData[0] != null && <p className="current-price">${recentPriceData[0]?.close.toFixed(2)}</p>}
         {priceDifference != null && (
         <p className={priceDifference > 0 ? "positive" : "negative"}>
           {priceDifference > 0 ? `+${priceDifference}` : priceDifference}%

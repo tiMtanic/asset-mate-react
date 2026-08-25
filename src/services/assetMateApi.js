@@ -14,9 +14,33 @@ export async function getStock(stockId) {
     return response.data;
 }
 
+export async function addStock(newStock) {
+    const response = await axios.post(`${BASE_URL}/stocks`, newStock);
+    console.log("addStock", response.data);
+    return response.data;
+}
+
+export async function updateStock(stockId, updatedStock) {
+    const response = await axios.put(`${BASE_URL}/stocks/${stockId}`, updatedStock);
+    console.log("updateStock", response.data);
+    return response.data;
+}
+
+export async function deleteStock(stockId) {
+    const response = await axios.delete(`${BASE_URL}/stocks/${stockId}?_dependent=watchlist&_dependent=eodTicks`);
+    console.log("deleteStock", response.data);
+    return response.data;
+}
+
 export async function getEodTicks(stockId, daysInPast) {
     const response = await axios.get(`${BASE_URL}/eodTicks?stockId=${stockId}${daysInPast ? "&_sort=-date&_page=1&_per_page=" + daysInPast : ""}`);
-    console.log(response.data);
+    console.log("getEodTicks", response.data);
+    return response.data;
+}
+
+export async function addEodTicks(eodTicks) {
+    const response = await axios.post(`${BASE_URL}/eodTicks`, eodTicks);
+    console.log("addEodTicks", response.data);
     return response.data;
 }
 
