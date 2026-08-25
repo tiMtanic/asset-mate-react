@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { addWatchlistEntry, deleteWatchlistEntry, getStock, getWatchlistEntry } from "../services/assetMateApi";
+import { addWatchlistEntry, deleteWatchlistEntry, getEodTicks, getStock, getWatchlistEntry } from "../services/assetMateApi";
+import Chart from "./Chart";
 
 function StockDetails() {
   const [stock, setStock] = useState(null);
   const [watchlistId, setWatchlistId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [eodTicks, setEodTicks] = useState([]);
   const {stockId} = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     loadStockData();
+    loadEodTicks();
     loadWatchlistData();
   }, [stockId]);
 
@@ -19,6 +22,16 @@ function StockDetails() {
       setIsLoading(true);
       setStock(await getStock(stockId));
       setIsLoading(false);
+    } catch (error) {
+      // TODO: add proper error handling
+      console.log(error);
+    }
+  };
+
+  const loadEodTicks = async () => {
+    try {
+      const result = await getEodTicks(stockId, 250);
+      setEodTicks(result.data);
     } catch (error) {
       // TODO: add proper error handling
       console.log(error);
@@ -57,6 +70,10 @@ function StockDetails() {
       ) : (
         <div id="stock-details">
           <h1>{stock.companyName}</h1>
+          {eodTicks.length > 0 &&
+          <div className="stock-chart-container">
+            <Chart data={eodTicks} />
+          </div>}
           <div className="stock-actions">
             <button onClick={() => navigate(`/stocks/${stock.id}/edit`)}>Edit Stock</button>
             <button onClick={handleWatchListAddRemove}>{watchlistId ? "Remove from " : "Add to "}Watchlist</button>

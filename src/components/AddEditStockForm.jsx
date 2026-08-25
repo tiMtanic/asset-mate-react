@@ -32,35 +32,118 @@ function AddEditStockForm() {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   try {
+  //     setIsLoading(true);
+  //     e.preventDefault();
+  
+  //     const response = stockId ? await updateStock(stockId, stock) : await addStock(stock);
+  //     const formJson = Object.fromEntries(new FormData(e.target).entries());
+  //     const file = formJson["stockDataJson"];
+
+  //     if (file.name !== "") {
+  //       const contents = await file.text();
+  //       const data = JSON.parse(contents);
+  
+  //       // Get last timestamp
+  //       const lastEodTick = stockId ? await getEodTicks(stockId, 1) : null;
+  //       const eodTicks = transformJsonData(response.id, lastEodTick?.data[0]?.date, data);
+  //       eodTicks.sort((a, b) => a.date - b.date);
+
+  //       if (eodTicks[0]) {
+  //         const today = eodTicks[0].close;
+  //         const yesterday = eodTicks[1] ? eodTicks[1].close : lastEodTick?.data[0]?.close;
+
+  //         setStock({
+  //           ...stock,
+  //           lastPrice: today,
+  //           lastPriceChange: (((today - yesterday) / yesterday) * 100)
+  //         });
+  //       }
+
+  //       await updateStock(stockId, stock)
+
+  //       await Promise.all(
+  //         eodTicks.map((item) => addEodTicks(item))
+  //       );
+
+  //     }
+
+  //     navigate(`/stocks/${response.id}`);
+  //   } catch (error) {
+  //     // TODO: error handling
+  //     console.log(error);
+  //   }
+  // }
+
   const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
       setIsLoading(true);
-      e.preventDefault();
-  
-      const response = stockId ? await updateStock(stockId, stock) : await addStock(stock);
-      const formJson = Object.fromEntries(new FormData(e.target).entries());
-      const file = formJson["stockDataJson"];
 
-      if (file.name !== "") {
-        const contents = await file.text();
-        const data = JSON.parse(contents);
-  
-        // Get last timestamp
-        const lastEodTick = stockId ? await getEodTicks(stockId, 1) : null;
-        const eodTicks = transformJsonData(response.id, lastEodTick?.data[0]?.date, data);
+      const formData = new FormData(e.target);
+      const file = formData.get("stockDataJson");
 
-        await Promise.all(
-          eodTicks.map((item) => addEodTicks(item))
-        );
+      let savedStockId = stockId;
+      let stockToSave = stock;
 
+      if (!stockId) {
+        const response = await addStock(stock);
+        savedStockId = response.id;
       }
 
-      navigate(`/stocks/${response.id}`);
+      if (file?.size > 0) {
+        const contents = await file.text();
+        const data = JSON.parse(contents);
+
+        const lastEodTick = stockId
+          ? await getEodTicks(stockId, 1)
+          : null;
+
+        const eodTicks = transformJsonData(
+          savedStockId,
+          lastEodTick?.data[0]?.date,
+          data
+        );
+
+        eodTicks.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+
+        if (eodTicks.length > 0) {
+          const today = eodTicks[0].close;
+          const yesterday =
+            eodTicks[1]?.close ??
+            lastEodTick?.data[0]?.close;
+
+          const lastPriceChange =
+            yesterday != null && yesterday !== 0
+              ? ((today - yesterday) / yesterday) * 100
+              : null;
+
+          stockToSave = {
+            ...stock,
+            lastPrice: today,
+            lastPriceChange,
+          };
+
+          setStock(stockToSave);
+        }
+
+        await Promise.all(
+          eodTicks.map((tick) => addEodTicks(tick))
+        );
+      }
+
+      await updateStock(savedStockId, stockToSave);
+
+      navigate(`/stocks/${savedStockId}`);
     } catch (error) {
-      // TODO: error handling
+      // TODO: proper error handling
       console.log(error);
     }
-  }
+  };
 
   const transformJsonData = (stockId, lastTimestamp, originalJson) => {
     const eodTicks = [];

@@ -32,8 +32,8 @@ export async function deleteStock(stockId) {
     return response.data;
 }
 
-export async function getEodTicks(stockId, daysInPast) {
-    const response = await axios.get(`${BASE_URL}/eodTicks?stockId=${stockId}${daysInPast ? "&_sort=-date&_page=1&_per_page=" + daysInPast : ""}`);
+export async function getEodTicks(stockId, ticksInPast) {
+    const response = await axios.get(`${BASE_URL}/eodTicks?stockId=${stockId}${ticksInPast ? "&_sort=-date&_page=1&_per_page=" + ticksInPast : ""}`);
     console.log("getEodTicks", response.data);
     return response.data;
 }

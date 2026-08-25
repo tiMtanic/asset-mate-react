@@ -3,7 +3,7 @@ import { deleteWatchlistEntry, getWatchlist } from "../services/assetMateApi";
 import { Link } from "react-router-dom";
 import RecentPriceData from "./RecentPriceData";
 
-function Watchlist() {
+function Watchlist({ limit }) {
   const [watchlistEntries, setWatchlistEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,7 +15,7 @@ function Watchlist() {
     try {
       setIsLoading(true);
       const watchlistResult = await getWatchlist();
-      setWatchlistEntries(watchlistResult);
+      setWatchlistEntries(limit ? watchlistResult.slice(0, limit) : watchlistResult);
       setIsLoading(false);
     } catch (error) {
       // TODO: add proper error handling

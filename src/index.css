@@ -157,7 +157,7 @@ p.negative {
   width: 50%;
 }
 
-#stock-details .stock-about, #stock-details .stock-info, #stock-add-edit-container {
+#stock-details .stock-about, #stock-details .stock-info, .stock-chart-container, #stock-add-edit-container, .filtered-stocks-list-container {
   border: 1px solid #DDDDDD;
   border-radius: 8px;
   padding: 8px;
@@ -201,4 +201,10 @@ p.negative {
 #form-actions {
   margin-top: 8px;
   justify-content: flex-end;
+}
+
+.filtered-stocks-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
