@@ -108,6 +108,7 @@ main h1 {
 .stocks-list-entry, .watchlist-entry {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border: 1px solid #DDDDDD;
   border-radius: 8px;
   padding: 8px;
@@ -120,11 +121,11 @@ main h1 {
 .price-details {
   display: flex;
   justify-content: space-between;
-  min-width: 164px;
+  min-width: 200px;
 }
 
 .current-price {
-  width: 100px;
+  width: 80px;
   text-align: end;
 }
 

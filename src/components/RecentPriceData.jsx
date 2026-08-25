@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getEodTicks } from "../services/assetMateApi";
+import ListItemChart from "./ListItemChart";
 
 function RecentPriceData({stockId}) {
   const [recentPriceData, setRecentPriceData] = useState([]);
@@ -11,7 +12,7 @@ function RecentPriceData({stockId}) {
 
   const getRecentPriceData = async () => {
     try {
-      const response = await getEodTicks(stockId, 2);
+      const response = await getEodTicks(stockId, 30);
       setRecentPriceData(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -42,6 +43,9 @@ function RecentPriceData({stockId}) {
         <p className={priceDifference > 0 ? "positive" : "negative"}>
           {priceDifference > 0 ? `+${priceDifference}` : priceDifference}%
         </p> )}
+        <div style={{width: "48px"}}>
+          <ListItemChart data={recentPriceData} height={24} />
+        </div>
       </div>
       }
     </>

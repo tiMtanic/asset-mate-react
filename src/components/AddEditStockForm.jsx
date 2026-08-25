@@ -32,50 +32,6 @@ function AddEditStockForm() {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   try {
-  //     setIsLoading(true);
-  //     e.preventDefault();
-  
-  //     const response = stockId ? await updateStock(stockId, stock) : await addStock(stock);
-  //     const formJson = Object.fromEntries(new FormData(e.target).entries());
-  //     const file = formJson["stockDataJson"];
-
-  //     if (file.name !== "") {
-  //       const contents = await file.text();
-  //       const data = JSON.parse(contents);
-  
-  //       // Get last timestamp
-  //       const lastEodTick = stockId ? await getEodTicks(stockId, 1) : null;
-  //       const eodTicks = transformJsonData(response.id, lastEodTick?.data[0]?.date, data);
-  //       eodTicks.sort((a, b) => a.date - b.date);
-
-  //       if (eodTicks[0]) {
-  //         const today = eodTicks[0].close;
-  //         const yesterday = eodTicks[1] ? eodTicks[1].close : lastEodTick?.data[0]?.close;
-
-  //         setStock({
-  //           ...stock,
-  //           lastPrice: today,
-  //           lastPriceChange: (((today - yesterday) / yesterday) * 100)
-  //         });
-  //       }
-
-  //       await updateStock(stockId, stock)
-
-  //       await Promise.all(
-  //         eodTicks.map((item) => addEodTicks(item))
-  //       );
-
-  //     }
-
-  //     navigate(`/stocks/${response.id}`);
-  //   } catch (error) {
-  //     // TODO: error handling
-  //     console.log(error);
-  //   }
-  // }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -163,13 +119,6 @@ function AddEditStockForm() {
     });
 
     return eodTicks;
-    // chart.result[0].
-    // timestamp
-    //
-    // indicators.quote[0].
-    // open high low close volume (Array)
-    // adjclose[0].adjclose (Array)
-
   }
 
   const handleClickDelete = async (e) => {

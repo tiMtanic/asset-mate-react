@@ -3,7 +3,7 @@ import { deleteWatchlistEntry, getWatchlist } from "../services/assetMateApi";
 import { Link } from "react-router-dom";
 import RecentPriceData from "./RecentPriceData";
 
-function Watchlist({ limit }) {
+function Watchlist({ limit, disableDeleteButton }) {
   const [watchlistEntries, setWatchlistEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +51,8 @@ function Watchlist({ limit }) {
               <p>{watchlistEntry.stock.companyName}</p>
               <div className="watchist-price-and-action">
                 <RecentPriceData stockId={watchlistEntry.stockId} />
-                <button onClick={(e) => handleClickRemoveFromWatchlist(e, watchlistEntry)}>X</button>
+                {!disableDeleteButton &&
+                <button onClick={(e) => handleClickRemoveFromWatchlist(e, watchlistEntry)}>X</button>}
               </div>
             </div>
           </Link>)}

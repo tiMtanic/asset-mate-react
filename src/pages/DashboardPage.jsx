@@ -443,7 +443,7 @@ function DashboardPage() {
       </div>
       <div className="filtered-stocks-list-container">
         <h4>Watchlist</h4>
-        <Watchlist limit={10} />
+        <Watchlist limit={10} disableDeleteButton={true} />
       </div>
       
     </>
