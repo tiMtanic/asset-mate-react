@@ -8,6 +8,12 @@ export async function getStocks() {
     return response.data;
 }
 
+export async function findStocks(searchString) {
+    const response = await axios.get(`${BASE_URL}/stocks?_where={"or":[{"companyName":{"contains":"${searchString}"}},{"tickerSymbol":{"contains":"${searchString}"}}]}`);
+    console.log("findStocks", response.data);
+    return response.data;
+}
+
 export async function getStock(stockId) {
     const response = await axios.get(`${BASE_URL}/stocks/${stockId}`);
     console.log("getStock", response.data);
@@ -67,6 +73,12 @@ export async function addWatchlistEntry(stockId) {
 export async function deleteWatchlistEntry(watchlistId) {
     const response = await axios.delete(`${BASE_URL}/watchlist/${watchlistId}`);
     console.log("deleteWatchlistEntry", response.data);
+    return response.data;
+}
+
+export async function getIndexesByTickerSymbol(tickerSymbol) {
+    const response = await axios.get(`${BASE_URL}/indexes?tickerSymbol=${tickerSymbol}`);
+    console.log("getIndexesByTickerSymbol", response.data);
     return response.data;
 }
 

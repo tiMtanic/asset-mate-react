@@ -7,6 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 import logoImage from "../assets/images/logo.png";
 import { Typography } from "@mui/material";
+import SearchBox from "./SearchBox";
 
 function Navbar({ handleClickMenuButton }) {
   return (
@@ -46,6 +47,7 @@ function Navbar({ handleClickMenuButton }) {
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
+        <SearchBox />
         <IconButton
           edge="end"
           color="inherit"

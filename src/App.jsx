@@ -11,6 +11,7 @@ import Menu from "./components/Menu";
 import { useEffect, useState } from "react";
 import { Box, Container, Drawer, useMediaQuery } from "@mui/material";
 import { alpha } from "@mui/material/styles";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,6 +26,7 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       <Box sx={{ minHeight: "100vh" }}>
         <Navbar handleClickMenuButton={() => setIsMenuOpen(!isMenuOpen)} />
         <Box

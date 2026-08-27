@@ -13,8 +13,12 @@ import TrendingDownRoundedIcon from "@mui/icons-material/TrendingDownRounded";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import PageHeader from "../components/PageHeader";
 import PageContent from "../components/PageContent";
-import { getIndexEodTicks } from "../services/assetMateApi";
-import { Skeleton } from "@mui/material";
+import {
+  getIndexEodTicks,
+  getIndexesByTickerSymbol,
+} from "../services/assetMateApi";
+import { Link, Skeleton } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import ErrorCard from "../components/ErrorMessage";
 
 function DashboardPage() {
@@ -28,7 +32,8 @@ function DashboardPage() {
 
   const loadIndexEodTicks = async () => {
     try {
-      const result = await getIndexEodTicks("4pfOmFqWZRA", 250);
+      const getIndexesResult = await getIndexesByTickerSymbol("^SPX");
+      const result = await getIndexEodTicks(getIndexesResult[0].id, 250);
       setIndexEodTicks(result.data);
       setIsIndexChartLoading(false);
     } catch (error) {
@@ -72,17 +77,21 @@ function DashboardPage() {
                   S&P 500
                 </Typography>
               </Box>
-              {isIndexChartLoading ? indexLoadErrorMessage ? (<ErrorCard message={indexLoadErrorMessage} />) : (
-                <Skeleton
-                  variant="rounded"
-                  width="100%"
-                  sx={{
-                    height: "auto",
-                    aspectRatio: "1 / 0.65",
-                    maxHeight: 500,
-                    mb: 3,
-                  }}
-                />
+              {isIndexChartLoading ? (
+                indexLoadErrorMessage ? (
+                  <ErrorCard message={indexLoadErrorMessage} />
+                ) : (
+                  <Skeleton
+                    variant="rounded"
+                    width="100%"
+                    sx={{
+                      height: "auto",
+                      aspectRatio: "1 / 0.65",
+                      maxHeight: 500,
+                      mb: 3,
+                    }}
+                  />
+                )
               ) : (
                 <Chart data={indexEodTicks} />
               )}
@@ -166,6 +175,20 @@ function DashboardPage() {
                 </Typography>
               </Box>
               <Watchlist limit={10} disableDeleteButton={true} />
+              <Link
+                component={RouterLink}
+                to="/watchlist"
+                underline="hover"
+                sx={{
+                  display: "block",
+                  textAlign: "right",
+                  mt: 2,
+                  mr: 1,
+                  fontWeight: 500,
+                }}
+              >
+                View Full Watchlist
+              </Link>
             </CardContent>
           </Card>
         </Box>
