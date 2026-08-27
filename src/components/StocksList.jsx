@@ -6,10 +6,12 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
+import ErrorMessage from "./ErrorMessage";
 
 function StocksList({ displayMode, limit }) {
   const [stocks, setStocks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     loadStocks();
@@ -37,14 +39,14 @@ function StocksList({ displayMode, limit }) {
       setStocks(result);
       setIsLoading(false);
     } catch (error) {
-      // TODO: proper error handling
+      setErrorMessage("Error loading stocks list!");
       console.log(error);
     }
   };
 
   return (
     <>
-      {isLoading ? (
+      {isLoading ? errorMessage ? (<ErrorMessage message={errorMessage} />) : (
         <Box
           sx={{
             display: "flex",

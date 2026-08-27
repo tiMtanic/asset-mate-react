@@ -69,3 +69,9 @@ export async function deleteWatchlistEntry(watchlistId) {
     console.log("deleteWatchlistEntry", response.data);
     return response.data;
 }
+
+export async function getIndexEodTicks(indexId, ticksInPast) {
+    const response = await axios.get(`${BASE_URL}/eodTicks?indexId=${indexId}${ticksInPast ? "&_sort=-date&_page=1&_per_page=" + ticksInPast : ""}`);
+    console.log("getIndexEodTicks", response.data);
+    return response.data;
+}

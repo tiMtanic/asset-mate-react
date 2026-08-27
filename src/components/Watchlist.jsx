@@ -8,10 +8,12 @@ import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import ErrorMessage from "./ErrorMessage";
 
 function Watchlist({ limit, disableDeleteButton }) {
   const [watchlistEntries, setWatchlistEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     getWatchlistData();
@@ -26,7 +28,7 @@ function Watchlist({ limit, disableDeleteButton }) {
       );
       setIsLoading(false);
     } catch (error) {
-      // TODO: add proper error handling
+      setErrorMessage("Error loading watchlist!");
       console.log(error);
     }
   };
@@ -38,7 +40,6 @@ function Watchlist({ limit, disableDeleteButton }) {
         entries.filter((x) => x.id !== watchlistEntry.id),
       );
     } catch (error) {
-      // TODO: proper error handling
       console.log(error);
     }
   };
@@ -50,7 +51,7 @@ function Watchlist({ limit, disableDeleteButton }) {
 
   return (
     <>
-      {isLoading ? (
+      {isLoading ? errorMessage ? (<ErrorMessage message={errorMessage} />) : (
         <Box
           sx={{
             display: "flex",

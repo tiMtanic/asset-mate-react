@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 function RecentPriceData({ stockId }) {
   const [recentPriceData, setRecentPriceData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     getRecentPriceData();
@@ -19,7 +20,7 @@ function RecentPriceData({ stockId }) {
       setRecentPriceData(response.data);
       setIsLoading(false);
     } catch (error) {
-      // TODO: proper error handling
+      setErrorMessage("Error loading price data!");
       console.log(error);
     }
   };
@@ -47,9 +48,17 @@ function RecentPriceData({ stockId }) {
             gap: 2,
           }}
         >
-          <Skeleton variant="text" width={70} height={28} />
-          <Skeleton variant="text" width={55} height={28} />
-          <Skeleton variant="rounded" width={48} height={24} />
+          {errorMessage ? (
+            <Typography sx={{ color: "error.main", fontSize: 14 }}>
+              {errorMessage}
+            </Typography>
+          ) : (
+            <>
+              <Skeleton variant="text" width={70} height={28} />
+              <Skeleton variant="text" width={55} height={28} />
+              <Skeleton variant="rounded" width={48} height={24} />
+            </>
+          )}
         </Box>
       ) : (
         <Box

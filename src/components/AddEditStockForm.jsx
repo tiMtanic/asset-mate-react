@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import UploadFileRoundedIcon from "@mui/icons-material/UploadFileRounded";
+import ErrorMessage from "./ErrorMessage";
 
 function AddEditStockForm() {
   const { stockId } = useParams();
@@ -31,6 +32,7 @@ function AddEditStockForm() {
     description: "",
   });
   const [IsLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     setIsLoading(true);
@@ -42,7 +44,7 @@ function AddEditStockForm() {
       setStock(await getStock(stockId));
       setIsLoading(false);
     } catch (error) {
-      // TODO: error handling
+      setErrorMessage("Failed to load stock information!");
       console.log(error);
     }
   };
@@ -103,7 +105,7 @@ function AddEditStockForm() {
 
       navigate(`/stocks/${savedStockId}`);
     } catch (error) {
-      // TODO: proper error handling
+      setErrorMessage("Failed to apply the stock information!");
       console.log(error);
     }
   };
@@ -134,7 +136,7 @@ function AddEditStockForm() {
       await deleteStock(stockId);
       navigate(`/stocks`);
     } catch (error) {
-      // TODO: error handling
+      setErrorMessage("Failed to remove the stock!");
       console.log(error);
     }
   };
@@ -145,49 +147,60 @@ function AddEditStockForm() {
   return (
     <>
       {IsLoading ? (
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, minmax(0, 1fr))",
-            },
-            gap: 2.5,
-          }}
-        >
-          {Array.from({ length: 7 }).map((_, index) => (
-            <Box key={index}>
-              <Skeleton variant="rounded" width="100%" height={56} />
+        errorMessage ? (
+          <ErrorMessage message={errorMessage} />
+        ) : (
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, minmax(0, 1fr))",
+              },
+              gap: 2.5,
+            }}
+          >
+            {Array.from({ length: 7 }).map((_, index) => (
+              <Box key={index}>
+                <Skeleton variant="rounded" width="100%" height={56} />
+              </Box>
+            ))}
+            <Box
+              sx={{
+                gridColumn: "1 / -1",
+              }}
+            >
+              <Skeleton variant="rounded" width="100%" height={120} />
             </Box>
-          ))}
-          <Box
-            sx={{
-              gridColumn: "1 / -1",
-            }}
-          >
-            <Skeleton variant="rounded" width="100%" height={120} />
+            <Box
+              sx={{
+                gridColumn: "1 / -1",
+              }}
+            >
+              <Skeleton
+                variant="text"
+                width={130}
+                height={24}
+                sx={{ mb: 0.5 }}
+              />
+              <Skeleton variant="rounded" width={180} height={44} />
+            </Box>
+            <Box
+              sx={{
+                gridColumn: "1 / -1",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 1.5,
+                mt: 1,
+              }}
+            >
+              {stockId && (
+                <Skeleton variant="rounded" width={140} height={44} />
+              )}
+              <Skeleton variant="rounded" width={140} height={44} />
+            </Box>
           </Box>
-          <Box
-            sx={{
-              gridColumn: "1 / -1",
-            }}
-          >
-            <Skeleton variant="text" width={130} height={24} sx={{ mb: 0.5 }} />
-            <Skeleton variant="rounded" width={180} height={44} />
-          </Box>
-          <Box
-            sx={{
-              gridColumn: "1 / -1",
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 1.5,
-              mt: 1,
-            }}
-          >
-            {stockId && <Skeleton variant="rounded" width={140} height={44} />}
-            <Skeleton variant="rounded" width={140} height={44} />
-          </Box>
-        </Box>
+        )
       ) : (
         <Box
           component="form"
@@ -201,6 +214,18 @@ function AddEditStockForm() {
             gap: 2.5,
           }}
         >
+          {errorMessage && (
+            <Box
+              sx={{
+                gridColumn: {
+                  xs: "1",
+                  sm: "1 / span 2",
+                },
+              }}
+            >
+              <ErrorMessage message={errorMessage} />
+            </Box>
+          )}
           <TextField
             name="companyName"
             id="company-name"

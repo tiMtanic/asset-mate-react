@@ -20,6 +20,7 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import ErrorMessage from "./ErrorMessage";
 
 function StockDetails() {
   const [stock, setStock] = useState(null);
@@ -27,6 +28,8 @@ function StockDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [eodTicks, setEodTicks] = useState([]);
   const { stockId } = useParams();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [chartDataErrorMessage, setChartDataErrorMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,8 +44,13 @@ function StockDetails() {
       setStock(await getStock(stockId));
       setIsLoading(false);
     } catch (error) {
-      // TODO: add proper error handling
       console.log(error);
+
+      if(error.status === 404) {
+        navigate("/not-found");
+      } else {
+        setErrorMessage("Error loading stock information!");
+      }
     }
   };
 
@@ -51,7 +59,7 @@ function StockDetails() {
       const result = await getEodTicks(stockId, 250);
       setEodTicks(result.data);
     } catch (error) {
-      // TODO: add proper error handling
+      setChartDataErrorMessage("Error loading chart data!");
       console.log(error);
     }
   };
@@ -61,7 +69,7 @@ function StockDetails() {
       const result = await getWatchlistEntry(stockId);
       setWatchlistId(result[0]?.id ?? null);
     } catch (error) {
-      // TODO: proper error handling
+      setErrorMessage("Error loading watchlist information!");
       console.log(error);
     }
   };
@@ -76,14 +84,14 @@ function StockDetails() {
         setWatchlistId(result.id);
       }
     } catch (error) {
-      // TODO: proper error handling
+      setErrorMessage("Error sending watchlist information!");
       console.log(error);
     }
   };
 
   return (
     <>
-      {isLoading ? (
+      {isLoading ? errorMessage ? (<ErrorMessage message={errorMessage} />) : (
         <Box>
           <Skeleton variant="text" width="35%" height={32} sx={{ mb: 2 }} />
           <Skeleton
@@ -159,6 +167,7 @@ function StockDetails() {
               <Chart data={eodTicks} />
             </Box>
           )}
+          {chartDataErrorMessage && (<Box sx={{mb: 2}}><ErrorMessage message={chartDataErrorMessage} /></Box>)}
           <Box
             sx={{
               display: "flex",
