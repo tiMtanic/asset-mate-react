@@ -46,7 +46,7 @@ function StockDetails() {
     } catch (error) {
       console.log(error);
 
-      if(error.status === 404) {
+      if (error.status === 404) {
         navigate("/not-found");
       } else {
         setErrorMessage("Error loading stock information!");
@@ -91,72 +91,120 @@ function StockDetails() {
 
   return (
     <>
-      {isLoading ? errorMessage ? (<ErrorMessage message={errorMessage} />) : (
+      {isLoading ? (
+        errorMessage ? (
+          <ErrorMessage message={errorMessage} />
+        ) : (
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                mb: 2,
+              }}
+            >
+              <Skeleton variant="circular" width={"44px"} height={"44px"} />
+              <Skeleton variant="text" width="35%" height={32} />
+            </Box>
+            <Skeleton
+              variant="rounded"
+              width="100%"
+              sx={{
+                height: "auto",
+                aspectRatio: "1 / 0.65",
+                maxHeight: 500,
+                mb: 3,
+              }}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                flexWrap: "wrap",
+                gap: 1.5,
+                mb: 3,
+              }}
+            >
+              <Skeleton variant="rounded" width={140} height={40} />
+              <Skeleton variant="rounded" width={140} height={40} />
+            </Box>
+            <Divider sx={{ my: 3 }} />
+            <Skeleton variant="text" width={180} height={32} />
+            <Skeleton variant="text" width="100%" />
+            <Skeleton variant="text" width="100%" />
+            <Skeleton variant="text" width="85%" />
+            <Divider sx={{ my: 3 }} />
+            <Skeleton variant="text" width={100} height={32} sx={{ mb: 1 }} />
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "110px minmax(0, 1fr)",
+                    sm: "160px minmax(0, 1fr)",
+                  },
+                  columnGap: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
+                  py: 1,
+                }}
+              >
+                <Skeleton variant="text" width="80%" />
+
+                <Skeleton variant="text" width={index === 5 ? "80%" : "50%"} />
+              </Box>
+            ))}
+          </Box>
+        )
+      ) : (
         <Box>
-          <Skeleton variant="text" width="35%" height={32} sx={{ mb: 2 }} />
-          <Skeleton
-            variant="rounded"
-            width="100%"
-            sx={{
-              height: "auto",
-              aspectRatio: "1 / 0.65",
-              maxHeight: 500,
-              mb: 3,
-            }}
-          />
           <Box
             sx={{
               display: "flex",
-              justifyContent: "flex-end",
-              flexWrap: "wrap",
-              gap: 1.5,
-              mb: 3,
+              alignItems: "center",
+              gap: 1,
+              mb: 2,
             }}
           >
-            <Skeleton variant="rounded" width={140} height={40} />
-            <Skeleton variant="rounded" width={140} height={40} />
-          </Box>
-          <Divider sx={{ my: 3 }} />
-          <Skeleton variant="text" width={180} height={32} />
-          <Skeleton variant="text" width="100%" />
-          <Skeleton variant="text" width="100%" />
-          <Skeleton variant="text" width="85%" />
-          <Divider sx={{ my: 3 }} />
-          <Skeleton variant="text" width={100} height={32} sx={{ mb: 1 }} />
-          {Array.from({ length: 6 }).map((_, index) => (
             <Box
-              key={index}
               sx={{
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "110px minmax(0, 1fr)",
-                  sm: "160px minmax(0, 1fr)",
-                },
-                columnGap: {
-                  xs: 1.5,
-                  sm: 2,
-                },
-                py: 1,
+                width: 44,
+                height: 44,
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "50%",
+                overflow: "hidden",
+                bgcolor: "#FFFFFF",
+                border: 1,
+                borderColor: "divider",
               }}
             >
-              <Skeleton variant="text" width="80%" />
-
-              <Skeleton variant="text" width={index === 5 ? "80%" : "50%"} />
+              <Box
+                component="img"
+                src={stock.logoUrl}
+                alt={`${stock.companyName} logo`}
+                sx={{
+                  width: "60%",
+                  height: "60%",
+                  objectFit: "contain",
+                }}
+              />
             </Box>
-          ))}
-        </Box>
-      ) : (
-        <Box>
-          <Typography
-            variant="h6"
-            component="h2"
-            sx={{
-              fontWeight: 600,
-              mb: 3,
-            }}
-          >
-            {stock.companyName}
-          </Typography>
+            <Typography
+              variant="h6"
+              component="h2"
+              sx={{
+                fontWeight: 600,
+              }}
+            >
+              {stock.companyName}
+            </Typography>
+          </Box>
           {eodTicks.length > 0 && (
             <Box
               sx={{
@@ -167,7 +215,11 @@ function StockDetails() {
               <Chart data={eodTicks} />
             </Box>
           )}
-          {chartDataErrorMessage && (<Box sx={{mb: 2}}><ErrorMessage message={chartDataErrorMessage} /></Box>)}
+          {chartDataErrorMessage && (
+            <Box sx={{ mb: 2 }}>
+              <ErrorMessage message={chartDataErrorMessage} />
+            </Box>
+          )}
           <Box
             sx={{
               display: "flex",

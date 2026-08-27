@@ -128,6 +128,10 @@ function Watchlist({ limit, disableDeleteButton }) {
                     />
                     <Box
                       sx={{
+                        width: {
+                          xs: "100%",
+                          sm: "auto",
+                        },
                         display: "flex",
                         alignItems: "center",
                         gap: 2,
@@ -145,6 +149,7 @@ function Watchlist({ limit, disableDeleteButton }) {
                     >
                       <Skeleton variant="text" width={70} height={28} />
                       <Skeleton variant="text" width={60} height={28} />
+                      <Box sx={{ flexGrow: 1 }}></Box>
                       <Skeleton variant="rounded" width={48} height={24} />
                     </Box>
                   </Box>
@@ -268,6 +273,10 @@ function Watchlist({ limit, disableDeleteButton }) {
                   </Typography>
                   <Box
                     sx={{
+                      width: {
+                        xs: "100%",
+                        sm: "auto",
+                      },
                       flexShrink: 0,
                       alignSelf: {
                         xs: "flex-end",

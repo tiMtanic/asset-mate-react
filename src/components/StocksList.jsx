@@ -114,6 +114,10 @@ function StocksList({ displayMode, limit }) {
                   />
                   <Box
                     sx={{
+                      width: {
+                        xs: "100%",
+                        sm: "auto",
+                      },
                       display: "flex",
                       alignItems: "center",
                       gap: 2,
@@ -129,6 +133,7 @@ function StocksList({ displayMode, limit }) {
                     }}
                   >
                     <Skeleton variant="text" width={70} height={28} />
+                    <Box sx={{ flexGrow: 1 }}></Box>
                     <Skeleton variant="text" width={60} height={28} />
                     <Skeleton variant="rounded" width={48} height={24} />
                   </Box>
@@ -234,6 +239,10 @@ function StocksList({ displayMode, limit }) {
 
                 <Box
                   sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "auto",
+                    },
                     flexShrink: 0,
                     alignSelf: {
                       xs: "flex-end",

@@ -65,7 +65,7 @@ function RecentPriceData({ stockId }) {
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 2,
+            gap: 1,
             whiteSpace: "nowrap",
           }}
         >
@@ -74,6 +74,7 @@ function RecentPriceData({ stockId }) {
               ${recentPriceData[0].close.toFixed(2)}
             </Typography>
           )}
+          <Box sx={{ flexGrow: 1 }}></Box>
           {priceDifference != null && (
             <Typography
               variant="body2"
