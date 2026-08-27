@@ -1,6 +1,8 @@
 # AssetMate
 
-AssetMate is a single page application to display company information including stock price data. It's using a mock backend. Because of that, the prices might not be up-to-date. The focus is to design a responsive frontend with a mobile first approach.
+Asset Mate is a single-page application for displaying company information, including stock price data.
+
+The application uses a mock backend, so stock prices may not always be up to date. The main focus of the project is building a responsive frontend with a mobile-first approach.
 
 ## Additional Information
 
@@ -19,6 +21,8 @@ erDiagram
       string location
       string websiteUrl
       string description
+      string lastPrice
+      string lastPriceChange
     }
     eodTick {
       string id PK

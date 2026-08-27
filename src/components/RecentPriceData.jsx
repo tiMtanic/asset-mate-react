@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getEodTicks } from "../services/assetMateApi";
 import ListItemChart from "./ListItemChart";
+import Box from "@mui/material/Box";
+import Skeleton from "@mui/material/Skeleton";
+import Typography from "@mui/material/Typography";
 
-function RecentPriceData({stockId}) {
+function RecentPriceData({ stockId }) {
   const [recentPriceData, setRecentPriceData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,18 +39,54 @@ function RecentPriceData({stockId}) {
 
   return (
     <>
-      {isLoading ? <p>Loading...</p> :
-      <div className="price-details">
-        {recentPriceData[0] != null && <p className="current-price">${recentPriceData[0]?.close.toFixed(2)}</p>}
-        {priceDifference != null && (
-        <p className={priceDifference > 0 ? "positive" : "negative"}>
-          {priceDifference > 0 ? `+${priceDifference}` : priceDifference}%
-        </p> )}
-        <div style={{width: "48px"}}>
-          <ListItemChart data={recentPriceData} height={24} />
-        </div>
-      </div>
-      }
+      {isLoading ? (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <Skeleton variant="text" width={70} height={28} />
+          <Skeleton variant="text" width={55} height={28} />
+          <Skeleton variant="rounded" width={48} height={24} />
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {recentPriceData[0] != null && (
+            <Typography variant="body2" fontWeight={600}>
+              ${recentPriceData[0].close.toFixed(2)}
+            </Typography>
+          )}
+          {priceDifference != null && (
+            <Typography
+              variant="body2"
+              fontWeight={500}
+              sx={{
+                color: priceDifference > 0 ? "success.main" : "error.main",
+              }}
+            >
+              {priceDifference > 0 ? `+${priceDifference}` : priceDifference}%
+            </Typography>
+          )}
+          <Box
+            sx={{
+              width: 48,
+              height: 24,
+              flexShrink: 0,
+            }}
+          >
+            <ListItemChart data={recentPriceData} height={24} />
+          </Box>
+        </Box>
+      )}
     </>
   );
 }

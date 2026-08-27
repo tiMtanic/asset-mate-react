@@ -196,6 +196,7 @@ function Chart({ data }) {
         });
 
       // Browser-native tooltip
+      // TODO: replace with better tooltip
       ohlc
         .selectAll("title")
         .data((d) => [d])

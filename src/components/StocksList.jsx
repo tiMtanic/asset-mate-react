@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { getEodTicks, getStocks } from "../services/assetMateApi";
+import { getStocks } from "../services/assetMateApi";
 import { Link } from "react-router-dom";
 import RecentPriceData from "./RecentPriceData";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Skeleton from "@mui/material/Skeleton";
+import Typography from "@mui/material/Typography";
 
 function StocksList({ displayMode, limit }) {
   const [stocks, setStocks] = useState([]);
@@ -18,9 +22,15 @@ function StocksList({ displayMode, limit }) {
 
       if (displayMode) {
         if (displayMode === "gainers") {
-          result = result.filter((stock) => stock.lastPriceChange > 0).sort((a, b) => b.lastPriceChange - a.lastPriceChange).slice(0, limit);
+          result = result
+            .filter((stock) => stock.lastPriceChange > 0)
+            .sort((a, b) => b.lastPriceChange - a.lastPriceChange)
+            .slice(0, limit);
         } else if (displayMode === "losers") {
-          result = result.filter((stock) => stock.lastPriceChange < 0).sort((a, b) => a.lastPriceChange - b.lastPriceChange).slice(0, limit);
+          result = result
+            .filter((stock) => stock.lastPriceChange < 0)
+            .sort((a, b) => a.lastPriceChange - b.lastPriceChange)
+            .slice(0, limit);
         }
       }
 
@@ -35,19 +45,74 @@ function StocksList({ displayMode, limit }) {
   return (
     <>
       {isLoading ? (
-        <p>Loading...</p>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            width: "100%",
+          }}
+        >
+          {Array.from({ length: limit ?? 10 }).map((_, index) => (
+            <Paper
+              key={index}
+              variant="outlined"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                width: "100%",
+                boxSizing: "border-box",
+                p: 2,
+              }}
+            >
+              <Skeleton variant="text" width="35%" height={28} />
+              <Box sx={{ flexGrow: 1 }} />
+              <Skeleton variant="text" width={70} height={28} />
+              <Skeleton variant="text" width={100} height={28} />
+            </Paper>
+          ))}
+        </Box>
       ) : (
-        <div className="stocks-list">
-          {stocks.map((stock) => 
-            <Link key={stock.id} to={`/stocks/${stock.id}`}>
-              <div className="stocks-list-entry">
-                {/* <img src={stock.logoUrl} /> */}
-                <p>{stock.companyName}</p>
-                <RecentPriceData stockId={stock.id} />
-              </div>
-            </Link>
-          )}
-        </div>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            width: "100%",
+          }}
+        >
+          {stocks.map((stock) => (
+            <Paper
+              key={stock.id}
+              component={Link}
+              to={`/stocks/${stock.id}`}
+              variant="outlined"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                width: "100%",
+                boxSizing: "border-box",
+                p: 2,
+                color: "text.primary",
+                textDecoration: "none",
+                transition: "background-color 0.2s, border-color 0.2s",
+
+                "&:hover": {
+                  bgcolor: "action.hover",
+                  borderColor: "primary.main",
+                },
+              }}
+            >
+              <Typography variant="subtitle1" fontWeight={600} noWrap>
+                {stock.companyName}
+              </Typography>
+              <Box sx={{ flexGrow: 1 }} />
+              <RecentPriceData stockId={stock.id} />
+            </Paper>
+          ))}
+        </Box>
       )}
     </>
   );
