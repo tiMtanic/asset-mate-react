@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   addWatchlistEntry,
   deleteWatchlistEntry,
-  getEodTicks,
+  getEodTicksByStartDate,
   getStock,
   getWatchlistEntry,
 } from "../services/assetMateApi";
@@ -15,22 +15,26 @@ import Link from "@mui/material/Link";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
-
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ErrorMessage from "./ErrorMessage";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { CircularProgress } from "@mui/material";
 
 function StockDetails() {
+  const { stockId } = useParams();
+  const navigate = useNavigate();
   const [stock, setStock] = useState(null);
   const [watchlistId, setWatchlistId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [eodTicks, setEodTicks] = useState([]);
-  const { stockId } = useParams();
   const [errorMessage, setErrorMessage] = useState("");
   const [chartDataErrorMessage, setChartDataErrorMessage] = useState("");
-  const navigate = useNavigate();
+  const [chartTimeframe, setChartTimeframe] = useState("6M");
+  const [isChartLoading, setIsChartLoading] = useState(true);
 
   useEffect(() => {
     loadStockData();
@@ -56,8 +60,12 @@ function StockDetails() {
 
   const loadEodTicks = async () => {
     try {
-      const result = await getEodTicks(stockId, 250);
-      setEodTicks(result.data);
+      const result = await getEodTicksByStartDate(
+        stockId,
+        getStartDateForTimeframe(chartTimeframe),
+      );
+      setEodTicks(result);
+      setIsChartLoading(false);
     } catch (error) {
       setChartDataErrorMessage("Error loading chart data!");
       console.log(error);
@@ -89,6 +97,60 @@ function StockDetails() {
     }
   };
 
+  const getStartDateForTimeframe = (timeframe) => {
+    const date = new Date();
+
+    switch (timeframe) {
+      case "1M":
+        date.setMonth(date.getMonth() - 1);
+        break;
+      case "6M":
+        date.setMonth(date.getMonth() - 6);
+        break;
+      case "1Y":
+        date.setFullYear(date.getFullYear() - 1);
+        break;
+      case "YTD":
+        date.setMonth(0);
+        date.setDate(1);
+        date.setHours(0, 0, 0, 0);
+        break;
+      case "MAX":
+        return 0;
+      default:
+        return 0;
+    }
+
+    return Math.floor(date.getTime() / 1000);
+  };
+
+  const handleChartTimeframeChange = async (event, newTimeframe) => {
+    if (newTimeframe === null) {
+      return;
+    }
+
+    setChartTimeframe(newTimeframe);
+    setIsChartLoading(true);
+
+    try {
+      setChartDataErrorMessage("");
+      const startDate = getStartDateForTimeframe(newTimeframe);
+      const result = await getEodTicksByStartDate(stockId, startDate);
+      setEodTicks(result);
+      setIsChartLoading(false);
+    } catch (error) {
+      console.log(error);
+      setChartDataErrorMessage("Error loading chart data!");
+    }
+  };
+
+  const stockPriceChange =
+    eodTicks.length > 1
+      ? ((eodTicks[0].close - eodTicks[eodTicks.length - 1].close) /
+          eodTicks[eodTicks.length - 1].close) *
+        100
+      : null;
+
   return (
     <>
       {isLoading ? (
@@ -104,19 +166,76 @@ function StockDetails() {
                 mb: 2,
               }}
             >
-              <Skeleton variant="circular" width={"44px"} height={"44px"} />
+              <Skeleton
+                variant="circular"
+                width={44}
+                height={44}
+                sx={{ flexShrink: 0 }}
+              />
               <Skeleton variant="text" width="35%" height={32} />
+              <Box sx={{ flexGrow: 1 }} />
+              <Skeleton variant="text" width={80} height={32} />
             </Box>
-            <Skeleton
-              variant="rounded"
-              width="100%"
+            <Box
               sx={{
-                height: "auto",
-                aspectRatio: "1 / 0.65",
-                maxHeight: 500,
+                width: "100%",
                 mb: 3,
               }}
-            />
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  mb: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    width: {
+                      xs: "100%",
+                      sm: "auto",
+                    },
+                  }}
+                >
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      variant="rounded"
+                      height={32}
+                      sx={{
+                        flex: {
+                          xs: 1,
+                          sm: "none",
+                        },
+                        width: {
+                          xs: "auto",
+                          sm: index === 3 ? 58 : 52,
+                        },
+                        borderRadius: 0,
+                        "&:first-of-type": {
+                          borderTopLeftRadius: 8,
+                          borderBottomLeftRadius: 8,
+                        },
+                        "&:last-of-type": {
+                          borderTopRightRadius: 8,
+                          borderBottomRightRadius: 8,
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+              <Skeleton
+                variant="rounded"
+                width="100%"
+                sx={{
+                  height: "auto",
+                  aspectRatio: "1 / 0.65",
+                  maxHeight: 500,
+                }}
+              />
+            </Box>
             <Box
               sx={{
                 display: "flex",
@@ -153,7 +272,6 @@ function StockDetails() {
                 }}
               >
                 <Skeleton variant="text" width="80%" />
-
                 <Skeleton variant="text" width={index === 5 ? "80%" : "50%"} />
               </Box>
             ))}
@@ -204,6 +322,37 @@ function StockDetails() {
             >
               {stock.companyName}
             </Typography>
+            <Box sx={{ flexGrow: 1 }}></Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                flexShrink: 0,
+              }}
+            >
+              {stockPriceChange !== null && (
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  sx={{
+                    color:
+                      stockPriceChange > 0
+                        ? "success.main"
+                        : stockPriceChange < 0
+                          ? "error.main"
+                          : "text.secondary",
+                  }}
+                >
+                  {stockPriceChange > 0 ? "+" : ""}
+                  {stockPriceChange.toFixed(2)}%
+                </Typography>
+              )}
+
+              <Typography variant="h6" fontWeight={600}>
+                ${stock.lastPrice.toFixed(2)}
+              </Typography>
+            </Box>
           </Box>
           {eodTicks.length > 0 && (
             <Box
@@ -212,7 +361,74 @@ function StockDetails() {
                 mb: 3,
               }}
             >
-              <Chart data={eodTicks} />
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  mb: 2,
+                }}
+              >
+                <ToggleButtonGroup
+                  value={chartTimeframe}
+                  exclusive
+                  onChange={handleChartTimeframeChange}
+                  size="small"
+                  aria-label="Chart timeframe"
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "auto",
+                    },
+                    "& .MuiToggleButton-root": {
+                      flex: {
+                        xs: 1,
+                        sm: "none",
+                      },
+                      px: {
+                        xs: 1,
+                        sm: 2,
+                      },
+                      whiteSpace: "nowrap",
+                    },
+                  }}
+                >
+                  <ToggleButton value="1M">1M</ToggleButton>
+                  <ToggleButton value="6M">6M</ToggleButton>
+                  <ToggleButton value="1Y">1Y</ToggleButton>
+                  <ToggleButton value="YTD">YTD</ToggleButton>
+                  <ToggleButton value="MAX">Max</ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                }}
+              >
+                <Chart data={eodTicks} />
+                {isChartLoading && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+
+                      bgcolor: (theme) =>
+                        theme.palette.mode === "dark"
+                          ? "rgba(17, 24, 32, 0.65)"
+                          : "rgba(255, 255, 255, 0.65)",
+
+                      borderRadius: 2,
+                      zIndex: 1,
+                    }}
+                  >
+                    <CircularProgress size={36} />
+                  </Box>
+                )}
+              </Box>
             </Box>
           )}
           {chartDataErrorMessage && (
@@ -295,7 +511,6 @@ function StockDetails() {
               <Typography color="text.secondary" sx={{ py: 1 }}>
                 Name
               </Typography>
-
               <Typography
                 sx={{
                   py: 1,

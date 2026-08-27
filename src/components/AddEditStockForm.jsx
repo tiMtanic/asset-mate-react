@@ -17,6 +17,11 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import UploadFileRoundedIcon from "@mui/icons-material/UploadFileRounded";
 import ErrorMessage from "./ErrorMessage";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 function AddEditStockForm() {
   const { stockId } = useParams();
@@ -33,6 +38,7 @@ function AddEditStockForm() {
   });
   const [IsLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -129,12 +135,22 @@ function AddEditStockForm() {
     return eodTicks;
   };
 
-  const handleClickDelete = async (e) => {
+  const handleClickDelete = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
+      setIsDeleteDialogOpen(false);
       setIsLoading(true);
-      e.preventDefault();
+
       await deleteStock(stockId);
-      navigate(`/stocks`);
+
+      navigate("/stocks");
     } catch (error) {
       setErrorMessage("Failed to remove the stock!");
       console.log(error);
@@ -387,6 +403,36 @@ function AddEditStockForm() {
           </Box>
         </Box>
       )}
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Delete stock?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete {stock.companyName}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            type="button"
+            onClick={handleCloseDeleteDialog}
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="contained"
+            color="error"
+            onClick={handleConfirmDelete}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

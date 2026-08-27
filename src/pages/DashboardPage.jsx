@@ -14,33 +14,105 @@ import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import PageHeader from "../components/PageHeader";
 import PageContent from "../components/PageContent";
 import {
-  getIndexEodTicks,
+  getIndexEodTicksByStartDate,
   getIndexesByTickerSymbol,
 } from "../services/assetMateApi";
-import { Link, Skeleton } from "@mui/material";
+import { CircularProgress, Link, Skeleton } from "@mui/material";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { Link as RouterLink } from "react-router-dom";
 import ErrorCard from "../components/ErrorMessage";
 
 function DashboardPage() {
+  const [indexId, setIndexId] = useState(null);
   const [indexEodTicks, setIndexEodTicks] = useState([]);
   const [isIndexChartLoading, setIsIndexChartLoading] = useState(true);
   const [indexLoadErrorMessage, setIndexLoadErrorMessage] = useState("");
+  const [chartTimeframe, setChartTimeframe] = useState("1Y");
 
   useEffect(() => {
     loadIndexEodTicks();
   }, []);
 
+  const getStartDateForTimeframe = (timeframe) => {
+    const date = new Date();
+
+    switch (timeframe) {
+      case "1M":
+        date.setMonth(date.getMonth() - 1);
+        break;
+      case "6M":
+        date.setMonth(date.getMonth() - 6);
+        break;
+      case "1Y":
+        date.setFullYear(date.getFullYear() - 1);
+        break;
+      case "YTD":
+        date.setMonth(0);
+        date.setDate(1);
+        date.setHours(0, 0, 0, 0);
+        break;
+      case "MAX":
+        return 0;
+      default:
+        return 0;
+    }
+
+    return Math.floor(date.getTime() / 1000);
+  };
+
   const loadIndexEodTicks = async () => {
     try {
       const getIndexesResult = await getIndexesByTickerSymbol("^SPX");
-      const result = await getIndexEodTicks(getIndexesResult[0].id, 250);
-      setIndexEodTicks(result.data);
-      setIsIndexChartLoading(false);
+      const id = getIndexesResult[0].id;
+
+      setIndexId(id);
+
+      const result = await getIndexEodTicksByStartDate(
+        id,
+        getStartDateForTimeframe(chartTimeframe),
+      );
+
+      setIndexEodTicks(result);
     } catch (error) {
       setIndexLoadErrorMessage("Failed to load Index data!");
       console.log(error);
+    } finally {
+      setIsIndexChartLoading(false);
     }
   };
+
+  const handleChartTimeframeChange = async (event, newTimeframe) => {
+    if (newTimeframe === null) {
+      return;
+    }
+
+    setChartTimeframe(newTimeframe);
+    setIsIndexChartLoading(true);
+    setIndexLoadErrorMessage("");
+
+    try {
+      const result = await getIndexEodTicksByStartDate(
+        indexId,
+        getStartDateForTimeframe(newTimeframe),
+      );
+
+      setIndexEodTicks(result);
+    } catch (error) {
+      setIndexLoadErrorMessage("Failed to load Index data!");
+      console.log(error);
+    } finally {
+      setIsIndexChartLoading(false);
+    }
+  };
+
+  const indexPriceChange =
+    indexEodTicks.length > 1
+      ? ((indexEodTicks[0].close -
+          indexEodTicks[indexEodTicks.length - 1].close) /
+          indexEodTicks[indexEodTicks.length - 1].close) *
+        100
+      : null;
 
   return (
     <Box>
@@ -76,11 +148,101 @@ function DashboardPage() {
                 <Typography variant="h6" component="h2" fontWeight={600}>
                   S&P 500
                 </Typography>
-              </Box>
-              {isIndexChartLoading ? (
-                indexLoadErrorMessage ? (
-                  <ErrorCard message={indexLoadErrorMessage} />
+                <Box sx={{ flexGrow: 1 }} />
+                {indexEodTicks.length > 0 ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                  >
+                    {indexPriceChange !== null && (
+                      <Typography
+                        variant="body2"
+                        fontWeight={600}
+                        sx={{
+                          color:
+                            indexPriceChange > 0
+                              ? "success.main"
+                              : indexPriceChange < 0
+                                ? "error.main"
+                                : "text.secondary",
+                        }}
+                      >
+                        {indexPriceChange > 0 ? "+" : ""}
+                        {indexPriceChange.toFixed(2)}%
+                      </Typography>
+                    )}
+                    <Typography variant="h6" fontWeight={600}>
+                      {indexEodTicks[0].close.toFixed(2)}
+                    </Typography>
+                  </Box>
                 ) : (
+                  isIndexChartLoading && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                      }}
+                    >
+                      <Skeleton variant="text" width={55} height={28} />
+                      <Skeleton variant="text" width={90} height={32} />
+                    </Box>
+                  )
+                )}
+              </Box>
+
+              {indexLoadErrorMessage && indexEodTicks.length === 0 ? (
+                <ErrorCard message={indexLoadErrorMessage} />
+              ) : indexEodTicks.length === 0 && isIndexChartLoading ? (
+                <Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      mb: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        width: {
+                          xs: "100%",
+                          sm: "auto",
+                        },
+                      }}
+                    >
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <Skeleton
+                          key={index}
+                          variant="rounded"
+                          height={32}
+                          sx={{
+                            flex: {
+                              xs: 1,
+                              sm: "none",
+                            },
+                            width: {
+                              xs: "auto",
+                              sm: index === 3 ? 58 : 52,
+                            },
+                            borderRadius: 0,
+                            "&:first-of-type": {
+                              borderTopLeftRadius: 8,
+                              borderBottomLeftRadius: 8,
+                            },
+                            "&:last-of-type": {
+                              borderTopRightRadius: 8,
+                              borderBottomRightRadius: 8,
+                            },
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  </Box>
+
                   <Skeleton
                     variant="rounded"
                     width="100%"
@@ -88,12 +250,82 @@ function DashboardPage() {
                       height: "auto",
                       aspectRatio: "1 / 0.65",
                       maxHeight: 500,
-                      mb: 3,
                     }}
                   />
-                )
+                </Box>
               ) : (
-                <Chart data={indexEodTicks} />
+                <>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      mb: 2,
+                    }}
+                  >
+                    <ToggleButtonGroup
+                      value={chartTimeframe}
+                      exclusive
+                      onChange={handleChartTimeframeChange}
+                      size="small"
+                      aria-label="Chart timeframe"
+                      sx={{
+                        width: {
+                          xs: "100%",
+                          sm: "auto",
+                        },
+                        "& .MuiToggleButton-root": {
+                          flex: {
+                            xs: 1,
+                            sm: "none",
+                          },
+                          px: {
+                            xs: 1,
+                            sm: 2,
+                          },
+                          whiteSpace: "nowrap",
+                        },
+                      }}
+                    >
+                      <ToggleButton value="1M">1M</ToggleButton>
+                      <ToggleButton value="6M">6M</ToggleButton>
+                      <ToggleButton value="1Y">1Y</ToggleButton>
+                      <ToggleButton value="YTD">YTD</ToggleButton>
+                      <ToggleButton value="MAX">Max</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Box>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      width: "100%",
+                    }}
+                  >
+                    <Chart data={indexEodTicks} currencySymbol="" />
+                    {isIndexChartLoading && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          inset: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          bgcolor: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "rgba(17, 24, 32, 0.65)"
+                              : "rgba(255, 255, 255, 0.65)",
+                          borderRadius: 2,
+                          zIndex: 1,
+                        }}
+                      >
+                        <CircularProgress size={36} />
+                      </Box>
+                    )}
+                  </Box>
+                  {indexLoadErrorMessage && (
+                    <Box sx={{ mt: 2 }}>
+                      <ErrorCard message={indexLoadErrorMessage} />
+                    </Box>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>

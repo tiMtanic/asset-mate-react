@@ -1,10 +1,14 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useD3 } from "../hooks/useD3";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
-function Chart({ data }) {
+function Chart({ data, currencySymbol = "$" }) {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
+  const [tooltip, setTooltip] = useState(null);
 
   const chartData = useMemo(
     () =>
@@ -132,7 +136,9 @@ function Chart({ data }) {
             d3
               .axisLeft(yPrice)
               .tickValues(priceTickValues)
-              .tickFormat(d3.format("$~f")),
+              .tickFormat(
+                (value) => `${currencySymbol}${d3.format("~f")(value)}`,
+              ),
           )
           .call((g) => g.select(".domain").remove());
 
@@ -195,28 +201,36 @@ function Chart({ data }) {
           `;
         });
 
-      // Browser-native tooltip
-      // TODO: replace with better tooltip
-      ohlc
-        .selectAll("title")
-        .data((d) => [d])
-        .join("title")
-        .text((d) => {
-          const formatDate = d3.utcFormat("%B %d, %Y");
-          const formatPrice = d3.format("$,.2f");
-          const formatVolume = d3.format(",");
+      // Tooltip
+      const dataPointCenters = chartData.map(
+        (d) => x(d.date) + x.bandwidth() / 2,
+      );
 
-          const change = (d.close - d.open) / d.open;
+      svg
+        .select(".interaction-area")
+        .attr("x", margin.left)
+        .attr("y", margin.top)
+        .attr("width", innerWidth)
+        .attr("height", volumeBottom - margin.top)
+        .attr("fill", "transparent")
+        .on("pointermove", (event) => {
+          const [pointerX, pointerY] = d3.pointer(event, svg.node());
 
-          return [
-            formatDate(d.date),
-            `Open: ${formatPrice(d.open)}`,
-            `High: ${formatPrice(d.high)}`,
-            `Low: ${formatPrice(d.low)}`,
-            `Close: ${formatPrice(d.close)}`,
-            `Change: ${d3.format("+.2%")(change)}`,
-            `Volume: ${formatVolume(d.volume)}`,
-          ].join("\n");
+          const index = d3.bisectCenter(dataPointCenters, pointerX);
+          const d = chartData[index];
+
+          if (!d) {
+            return;
+          }
+
+          setTooltip({
+            x: pointerX,
+            y: pointerY,
+            data: d,
+          });
+        })
+        .on("pointerleave", () => {
+          setTooltip(null);
         });
 
       // Volume bars
@@ -254,9 +268,10 @@ function Chart({ data }) {
   );
 
   return (
-    <div
+    <Box
       ref={containerRef}
-      style={{
+      sx={{
+        position: "relative",
         width: "100%",
       }}
     >
@@ -281,8 +296,90 @@ function Chart({ data }) {
         <g className="volume-y-axis" />
 
         <g className="x-axis" />
+
+        <rect className="interaction-area" />
       </svg>
-    </div>
+      {tooltip && (
+        <Paper
+          elevation={4}
+          sx={{
+            position: "absolute",
+            left: tooltip.x > width - 220 ? tooltip.x - 210 : tooltip.x + 12,
+            top: tooltip.y + 12,
+            zIndex: 2,
+            p: 1.5,
+            minWidth: 180,
+            pointerEvents: "none",
+          }}
+        >
+          <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+            {d3.utcFormat("%B %d, %Y")(tooltip.data.date)}
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "auto auto",
+              columnGap: 2,
+              rowGap: 0.25,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Open
+            </Typography>
+            <Typography variant="body2" sx={{ textAlign: "right" }}>
+              {currencySymbol}
+              {d3.format(",.2f")(tooltip.data.open)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              High
+            </Typography>
+            <Typography variant="body2" sx={{ textAlign: "right" }}>
+              {currencySymbol}
+              {d3.format(",.2f")(tooltip.data.high)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Low
+            </Typography>
+            <Typography variant="body2" sx={{ textAlign: "right" }}>
+              {currencySymbol}
+              {d3.format(",.2f")(tooltip.data.low)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Close
+            </Typography>
+            <Typography variant="body2" sx={{ textAlign: "right" }}>
+              {currencySymbol}
+              {d3.format(",.2f")(tooltip.data.close)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Change
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                textAlign: "right",
+                color:
+                  tooltip.data.close > tooltip.data.open
+                    ? "success.main"
+                    : tooltip.data.close < tooltip.data.open
+                      ? "error.main"
+                      : "text.secondary",
+              }}
+            >
+              {d3.format("+.2%")(
+                (tooltip.data.close - tooltip.data.open) / tooltip.data.open,
+              )}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Volume
+            </Typography>
+            <Typography variant="body2" sx={{ textAlign: "right" }}>
+              {d3.format(",")(tooltip.data.volume)}
+            </Typography>
+          </Box>
+        </Paper>
+      )}
+    </Box>
   );
 }
 
