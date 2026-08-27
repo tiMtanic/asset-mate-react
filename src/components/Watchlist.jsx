@@ -51,39 +51,119 @@ function Watchlist({ limit, disableDeleteButton }) {
 
   return (
     <>
-      {isLoading ? errorMessage ? (<ErrorMessage message={errorMessage} />) : (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-            width: "100%",
-          }}
-        >
-          {Array.from({ length: limit ?? 10 }).map((_, index) => (
-            <Paper
-              key={index}
-              variant="outlined"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                width: "100%",
-                boxSizing: "border-box",
-                p: 2,
-              }}
-            >
-              <Skeleton variant="text" width="35%" height={28} />
-              <Box sx={{ flexGrow: 1 }} />
-              <Skeleton variant="text" width={70} height={28} />
-              <Skeleton variant="text" width={55} height={28} />
-              <Skeleton variant="rounded" width={48} height={28} />
-              {!disableDeleteButton && (
-                <Skeleton variant="circular" width={28} height={28} />
-              )}
-            </Paper>
-          ))}
-        </Box>
+      {isLoading ? (
+        errorMessage ? (
+          <ErrorMessage message={errorMessage} />
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              width: "100%",
+            }}
+          >
+            {Array.from({ length: limit ?? 10 }).map((_, index) => (
+              <Paper
+                key={index}
+                variant="outlined"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  overflow: "hidden",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    flexGrow: 1,
+                    minWidth: 0,
+                    p: 2,
+                  }}
+                >
+                  <Skeleton
+                    variant="circular"
+                    width={44}
+                    height={44}
+                    sx={{
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+
+                      flexDirection: {
+                        xs: "column",
+                        sm: "row",
+                      },
+                      alignItems: {
+                        xs: "stretch",
+                        sm: "center",
+                      },
+                      gap: {
+                        xs: 0.5,
+                        sm: 2,
+                      },
+                      flexGrow: 1,
+                      minWidth: 0,
+                    }}
+                  >
+                    <Skeleton
+                      variant="text"
+                      height={28}
+                      sx={{
+                        width: {
+                          xs: "65%",
+                          sm: "35%",
+                        },
+                        maxWidth: 260,
+                        minWidth: 0,
+                        flexShrink: 1,
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        flexShrink: 0,
+
+                        alignSelf: {
+                          xs: "flex-end",
+                          sm: "auto",
+                        },
+                        ml: {
+                          xs: 0,
+                          sm: "auto",
+                        },
+                      }}
+                    >
+                      <Skeleton variant="text" width={70} height={28} />
+                      <Skeleton variant="text" width={60} height={28} />
+                      <Skeleton variant="rounded" width={48} height={24} />
+                    </Box>
+                  </Box>
+                </Box>
+                {!disableDeleteButton && (
+                  <Skeleton
+                    variant="circular"
+                    width={28}
+                    height={28}
+                    sx={{
+                      mr: 2,
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+              </Paper>
+            ))}
+          </Box>
+        )
       ) : (
         <Box
           sx={{
@@ -102,8 +182,8 @@ function Watchlist({ limit, disableDeleteButton }) {
                 alignItems: "center",
                 width: "100%",
                 boxSizing: "border-box",
+                overflow: "hidden",
                 transition: "background-color 0.2s, border-color 0.2s",
-
                 "&:hover": {
                   bgcolor: "action.hover",
                   borderColor: "primary.main",
@@ -124,11 +204,84 @@ function Watchlist({ limit, disableDeleteButton }) {
                   textDecoration: "none",
                 }}
               >
-                <Typography variant="subtitle1" fontWeight={600} noWrap>
-                  {watchlistEntry.stock.companyName}
-                </Typography>
-                <Box sx={{ flexGrow: 1 }} />
-                <RecentPriceData stockId={watchlistEntry.stockId} />
+                <Box
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    bgcolor: "#FFFFFF",
+                    border: 1,
+                    borderColor: "divider",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={watchlistEntry.stock.logoUrl}
+                    alt={`${watchlistEntry.stock.companyName} logo`}
+                    sx={{
+                      width: "60%",
+                      height: "60%",
+                      objectFit: "contain",
+                    }}
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: {
+                      xs: "column",
+                      sm: "row",
+                    },
+                    alignItems: {
+                      xs: "stretch",
+                      sm: "center",
+                    },
+                    gap: {
+                      xs: 0.5,
+                      sm: 2,
+                    },
+                    flexGrow: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={600}
+                    sx={{
+                      minWidth: 0,
+                      maxWidth: "100%",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      flex: {
+                        xs: "none",
+                        sm: "1 1 auto",
+                      },
+                    }}
+                  >
+                    {watchlistEntry.stock.companyName}
+                  </Typography>
+                  <Box
+                    sx={{
+                      flexShrink: 0,
+                      alignSelf: {
+                        xs: "flex-end",
+                        sm: "auto",
+                      },
+                      ml: {
+                        xs: 0,
+                        sm: "auto",
+                      },
+                    }}
+                  >
+                    <RecentPriceData stockId={watchlistEntry.stockId} />
+                  </Box>
+                </Box>
               </Box>
               {!disableDeleteButton && (
                 <IconButton
