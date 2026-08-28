@@ -348,10 +348,10 @@ function StockDetails() {
                   {stockPriceChange.toFixed(2)}%
                 </Typography>
               )}
-
+              {stock.lastPrice &&
               <Typography variant="h6" fontWeight={600}>
                 ${stock.lastPrice.toFixed(2)}
-              </Typography>
+              </Typography>}
             </Box>
           </Box>
           {eodTicks.length > 0 && (
